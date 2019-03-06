@@ -1,6 +1,5 @@
 const SpotifyStrategy = require("passport-spotify").Strategy;
 const keys = require("./keys");
-const request = require("request");
 const opts = {};
 opts.clientID = keys.clientID;
 opts.clientSecret = keys.clientSECRET;
