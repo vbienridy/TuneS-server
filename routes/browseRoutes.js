@@ -15,17 +15,20 @@ const authOptions = {
 };
 
 module.exports = app => {
-  app.get('/api/search/:search', function (req, res) {
+  app.get('/api/search/:search/type/:type', function (req, res) {
     request.post(authOptions, function (error, response, body) {
       if (!error && response.statusCode === 200) {
         // use the access token to access the Spotify Web API
         const token = body.access_token;
         //https://api.spotify.com/v1/search?q=Muse&type=track
         const options2 = {
-          url: 'https://api.spotify.com/v1/search?q=' + req.params.search +
-            "&type=track",
+          url:
+            "https://api.spotify.com/v1/search?q=" +
+            req.params.search +
+            "&type=" +
+            req.params.type,
           headers: {
-            'Authorization': 'Bearer ' + token
+            Authorization: "Bearer " + token
           },
           json: true
         };
