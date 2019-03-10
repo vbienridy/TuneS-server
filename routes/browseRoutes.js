@@ -1,12 +1,12 @@
-var request = require('request'); // "Request" library
+const request = require('request'); // "Request" library
 
 const keys = require('../config/keys');
 
 // your application requests authorization
-var authOptions = {
+const authOptions = {
   url: 'https://accounts.spotify.com/api/token',
   headers: {
-    'Authorization': 'Basic ' + (new Buffer(keys.spotifyClientID + ':' + keys.spotifyClientSecret).toString('base64'))
+    'Authorization': 'Basic ' + (Buffer.from(keys.spotifyClientID + ':' + keys.spotifyClientSecret).toString('base64'))
   },
   form: {
     grant_type: 'client_credentials'
@@ -19,9 +19,9 @@ module.exports = app => {
     request.post(authOptions, function (error, response, body) {
       if (!error && response.statusCode === 200) {
         // use the access token to access the Spotify Web API
-        var token = body.access_token;
+        const token = body.access_token;
         //https://api.spotify.com/v1/search?q=Muse&type=track
-        var options2 = {
+        const options2 = {
           url: 'https://api.spotify.com/v1/search?q=' + req.params.search +
             "&type=track",
           headers: {
