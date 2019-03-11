@@ -1,3 +1,4 @@
+const keys = require('./config/keys');
 const express = require('express')
 const passport = require("passport");
 // const session = require("express-session");
@@ -23,7 +24,7 @@ app.use(passport.initialize());
 app.use(express.json())    // <==== parse request body as JSON
 
 //local
-app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
+app.use(cors({ credentials: true, origin: keys.frontend }));
 // app.use(cookieParser());
 
 // Passport Config
