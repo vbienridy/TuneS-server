@@ -15,7 +15,7 @@ const authOptions = {
 
 
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost:12345/test');
+mongoose.connect(keys.mongodb);
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));//only once
 db.once('open', function() {console.log("we are connected")}) //only once?
@@ -95,13 +95,13 @@ module.exports = app => {
     });
 
     app.get('/api/album/:id/comments', function (req, res) {//better paractice is to use references in mongoose
-        //console.log("searching")
+        console.log("searching")
         AlbumComment.find(
             { albumId: req.params.id}).sort({updatedAt: -1}).exec(
             function (err, comments) {
                 if (err)
                     return console.log(err);
-                //ßconsole.log(comments)
+                console.log(comments)
                 res.json(comments)
                 // 'athletes' is a list
             })

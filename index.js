@@ -37,5 +37,5 @@ require('./routes/authRoutes')(app);
 require('./routes/browseRoutes')(app);
 require('./models/db')(app);
 
-const PORT = process.env.PORT || 5010;
+const PORT = process.env.PORT || 5009;
 app.listen(PORT);
