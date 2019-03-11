@@ -10,6 +10,8 @@
     "express": "^4.16.4",
     "mongoose": "^5.4.18",
     "nodemon": "^1.18.10",
+    "passport": "^0.4.0",
+    "passport-spotify": "^1.0.1",
     "request": "^2.88.0"
   },
   "scripts": {
