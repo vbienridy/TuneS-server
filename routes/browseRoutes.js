@@ -42,13 +42,11 @@ module.exports = app => {
   app.get('/api/track/:id', function (req, res) {
     //console.log(req.params.search, 1)
 
-
     request.post(authOptions, function (error, response, body) {
       if (!error && response.statusCode === 200) {
 
         // use the access token to access the Spotify Web API
         let token = body.access_token;
-
         //https://api.spotify.com/v1/search?q=Muse&type=track
         let options2 = {
           url: 'https://api.spotify.com/v1/tracks/' + req.params.id,
