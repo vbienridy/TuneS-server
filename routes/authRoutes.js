@@ -4,7 +4,7 @@ const querystring = require("querystring");
 const keys = require("../config/keys");
 
 module.exports = app => {
-    // @route   GET api/users/login
+    // @route   GET api/login/spotify-auth
     // @desc    Redirect user to spotify auth
     // @access  Public
     app.get(
@@ -19,14 +19,14 @@ module.exports = app => {
         }
     );
 
-    // @route   GET api/users/callback
+    // @route   GET api/login/spotify-auth/callback
     // @desc    Go to callbackURL after user accepts or denies auth
     // @access  Private
     app.get(
         "/login/spotify-auth/callback",
-        passport.authenticate("spotify", { failureRedirect: "/" }),
+        passport.authenticate("spotify", { failureRedirect: "http://localhost:3000/" }),
         (req, res) => {
-            res.json(req.user);
+            res.redirect("http://localhost:3000/");
             // // options for accessing "https://api.spotify.com/v1/me"
             // const options = {
             //     url: "https://api.spotify.com/v1/me",
@@ -40,7 +40,7 @@ module.exports = app => {
         }
     );
 
-    // // @route   GET api/users/refresh_token
+    // // @route   GET api/refresh_token
     // // @desc    Refresh access token
     // // @access  Private
     // app.get("/refresh_token", (req, res) => {
@@ -70,12 +70,20 @@ module.exports = app => {
     //     });
     // });
 
-    // @route   POST api/users/logout
+    // @route   GET api/user/current
+    // @desc    Retrieve current user
+    // @access  Public
+    app.get("/user/current", (req, res) => {
+        res.json(req.user);
+    });
+
+    // @route   POST api/logout
     // @desc    Log out user
     // @access  Private
     app.post("/logout", (req, res) => {
         req.logout();
         res.redirect("/");
+        // req.session.destroy(() => res.redirect("/"));
     });
 
     // Simple route middleware to ensure user is authenticated.
