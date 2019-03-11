@@ -32,7 +32,7 @@ app.use(passport.initialize());
 app.use(express.json())    // <==== parse request body as JSON
 
 //local
-app.use(cors());
+//app.use(cors());
 // app.use(cookieParser());
 
 // Passport Config
