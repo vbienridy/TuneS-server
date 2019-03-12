@@ -5,7 +5,8 @@ const passport = require("passport");
 // const cookieParser = require("cookie-parser");
 const cors = require('cors');
 const app = express()
-app.use(cors({origin: 'https://tune-s.herokuapp.com'}))
+const request = require('request'); // "Request" library
+app.use(cors({credentials:"include",origin: 'https://tune-s.herokuapp.com'}))
 // Passport session setup.
 passport.serializeUser(function (user, done) {
     done(null, user);
