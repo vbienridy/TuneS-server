@@ -7,6 +7,7 @@ const cors = require('cors');
 const app = express()
 const request = require('request'); // "Request" library
 // app.use(cors({credentials:true, origin: 'https://tune-s.herokuapp.com'}))
+app.use(express.json())    // <==== parse request body as JSON
 app.use(function (req, res, next) {
 
     // Website you wish to allow to connect
@@ -25,6 +26,8 @@ app.use(function (req, res, next) {
     // Pass to next layer of middleware
     next();
 });
+require('./routes/browseRoutes')(app);
+require('./models/db')(app);
 // Passport session setup.
 passport.serializeUser(function (user, done) {
     done(null, user);
@@ -42,7 +45,7 @@ passport.deserializeUser(function (obj, done) {
 
 app.use(passport.initialize());
 // app.use(passport.session());
-app.use(express.json())    // <==== parse request body as JSON
+
 
 //local
 //app.use(cors());
@@ -51,13 +54,11 @@ app.use(express.json())    // <==== parse request body as JSON
 // Passport Config
 require("./config/passport")(passport);
 
-
 //remote
 // app.use(cors({ credentials: true, origin: 'https://tune-s.herokuapp.com' }));
 
 require('./routes/authRoutes')(app);
-require('./routes/browseRoutes')(app);
-require('./models/db')(app);
+
 
 const PORT = process.env.PORT || 5009;
 console.log('port',PORT)
