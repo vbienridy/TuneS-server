@@ -6,7 +6,7 @@ const passport = require("passport");
 const cors = require('cors');
 const app = express()
 const request = require('request'); // "Request" library
-app.use(cors({credentials:"include",origin: 'https://tune-s.herokuapp.com'}))
+app.use(cors({credentials:true, origin: 'https://tune-s.herokuapp.com'}))
 // Passport session setup.
 passport.serializeUser(function (user, done) {
     done(null, user);
