@@ -6,7 +6,25 @@ const passport = require("passport");
 const cors = require('cors');
 const app = express()
 const request = require('request'); // "Request" library
-app.use(cors({credentials:true, origin: 'https://tune-s.herokuapp.com'}))
+// app.use(cors({credentials:true, origin: 'https://tune-s.herokuapp.com'}))
+app.use(function (req, res, next) {
+
+    // Website you wish to allow to connect
+    res.setHeader('Access-Control-Allow-Origin', 'https://tune-s.herokuapp.com');
+
+    // Request methods you wish to allow
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+
+    // Request headers you wish to allow
+    res.setHeader('Access-Control-Allow-Headers', '*');
+
+    // Set to true if you need the website to include cookies in the requests sent
+    // to the API (e.g. in case you use sessions)
+    res.setHeader('Access-Control-Allow-Credentials', true);
+
+    // Pass to next layer of middleware
+    next();
+});
 // Passport session setup.
 passport.serializeUser(function (user, done) {
     done(null, user);
