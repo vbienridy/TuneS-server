@@ -42,4 +42,5 @@ require('./routes/browseRoutes')(app);
 require('./models/db')(app);
 
 const PORT = process.env.PORT || 5009;
+console.log('port',PORT)
 app.listen(PORT);//
