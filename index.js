@@ -61,4 +61,5 @@ require('./models/db')(app);
 
 const PORT = process.env.PORT || 5009;
 console.log('port',PORT)
+console.log('env', process.env)
 app.listen(PORT);//
