@@ -22,7 +22,7 @@ app.use(passport.initialize());
 // app.use(passport.session());
 
 //local
-app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
+// app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
 // app.use(cookieParser());
 
 // Passport Config
@@ -30,7 +30,7 @@ require("./config/passport")(passport);
 
 
 //remote
-// app.use(cors({ credentials: true, origin: 'https://tune-s.herokuapp.com' }));
+app.use(cors({ credentials: true, origin: 'https://tunes-client.herokuapp.com' }));
 
 require('./routes/authRoutes')(app);
 require('./routes/browseRoutes')(app);
