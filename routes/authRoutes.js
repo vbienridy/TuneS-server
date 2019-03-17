@@ -7,7 +7,8 @@ module.exports = app => {
   app.get(
     "/login/spotify-auth",
     passport.authenticate("spotify", {
-      scope: ["user-read-email", "user-read-private"]
+      scope: ["user-read-email", "user-read-private"],
+      showDialog:true
     }),
     (req, res) => { }
   );
@@ -56,7 +57,9 @@ module.exports = app => {
 
   app.get("/user/current", (req, res) => {
     if (req.user) {
-      res.json(req.user);
+      res.json({
+        id: req.user.profile.id
+      })
     }
     else {
       res.json({ id: -1 })
