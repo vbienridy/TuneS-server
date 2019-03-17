@@ -15,7 +15,7 @@ const authOptions = {
 
 
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost:12345/test');
+// mongoose.connect('mongodb://localhost:12345/test');
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));//only once
 db.once('open', function () { console.log("we are connected") }) //only once?
