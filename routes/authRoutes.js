@@ -58,11 +58,12 @@ module.exports = app => {
   app.get("/user/current", (req, res) => {
     if (req.user) {
       res.json({
-        id: req.user.profile.id
+        id: req.user.profile.id,
+        username: req.user.profile.username
       })
     }
     else {
-      res.json({ id: -1 })
+      res.json({ id: -1, username: -1 })
     }
 
   });
