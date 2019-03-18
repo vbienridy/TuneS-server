@@ -15,9 +15,9 @@ module.exports = app => {
 
   app.get(
     "/login/spotify-auth/callback",
-    passport.authenticate("spotify", { failureRedirect: "http://localhost:3000/" }),
+      passport.authenticate("spotify", { failureRedirect: "http://tunes-client.herokuapp.com/" }),
     (req, res) => {
-      res.redirect("http://localhost:3000/");
+        res.redirect("http://tunes-client.herokuapp.com/");
       // const options = {
       //     url: "https://api.spotify.com/v1/me",
       //     headers: { Authorization: "Bearer " + req.user.accessToken },

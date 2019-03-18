@@ -22,14 +22,13 @@ app.use(passport.session());
 app.use(express.json())    // <==== parse request body as JSON
 
 //local
-app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
+// app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
+
+//remote
+app.use(cors({ credentials: true, origin: 'https://tunes-api.herokuapp.com' }));
 
 // Passport Config
 require("./config/passport")(passport);
-
-
-//remote
-// app.use(cors({ credentials: true, origin: 'https://tune-s.herokuapp.com' }));
 
 require('./routes/authRoutes')(app);
 require('./routes/browseRoutes')(app);
