@@ -25,7 +25,7 @@ app.use(express.json())    // <==== parse request body as JSON
 // app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
 
 //remote
-app.use(cors({ credentials: true, origin: 'https://tunes-client.herokuapp.com' }));
+app.use(cors({ credentials: true, origin: 'https://tunes-app.herokuapp.com' }));
 
 // Passport Config
 require("./config/passport")(passport);
