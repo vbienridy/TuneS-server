@@ -105,13 +105,13 @@ module.exports = app => {
   });
 
   app.get("/api/artist/:id", function (req, res) {
-    //console.log(req.params.search, 1)
+    console.log("first")
 
     request.post(authOptions, function (error, response, body) {
       if (!error && response.statusCode === 200) {
         // use the access token to access the Spotify Web API
         let token = body.access_token;
-
+          console.log("second", token)
         //https://api.spotify.com/v1/search?q=Muse&type=track
         let options2 = {
           url: "https://api.spotify.com/v1/artists/" + req.params.id,
@@ -126,6 +126,7 @@ module.exports = app => {
           //error handling here can be better
 
           //console.log(body);
+            console.log(body)
           res.json(body); //send first one met
         });
 
@@ -136,12 +137,12 @@ module.exports = app => {
 
   app.get("/api/playlist/:id", function(req, res) {
     //console.log(req.params.search, 1)
-
+      console.log("first")
     request.post(authOptions, function(error, response, body) {
       if (!error && response.statusCode === 200) {
         // use the access token to access the Spotify Web API
         let token = body.access_token;
-
+        console.log("second")
         //https://api.spotify.com/v1/search?q=Muse&type=track
         let options2 = {
           url: "https://api.spotify.com/v1/playlists/" + req.params.id,
