@@ -3,5 +3,6 @@ module.exports = {
   spotifyClientSecret: "1215139e9bc046329a2e24582f5863b3",
   callBackURL: "http://localhost:5000/login/spotify-auth/callback",
     mongodb:"mongodb://localhost:12345/test",
-    frontend:"http://localhost:3000"//for cors
+    frontend:"http://localhost:3000",//for cors
+    port: 5000
 };

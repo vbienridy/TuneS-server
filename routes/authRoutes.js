@@ -4,29 +4,43 @@ const querystring = require("querystring");
 const keys = require("../config/keys");
 
 module.exports = app => {
-    // @route   GET api/users/login
+    // @route   GET api/login/spotify-auth
     // @desc    Redirect user to spotify auth
     // @access  Public
+
+    //http://www.passportjs.org/docs/authenticate/
+    //http://expressjs.com/en/api.html#app.get
+    app.get("/login/spotify-auth", function(req, res){
+        req.session.state = "bbb"//you can set redirect album id here
+        res.redirect("/login/spotify-auth2")
+    })
     app.get(
-        "/login/spotify-auth",
-        passport.authenticate("spotify", {
-            scope: ["user-read-email", "user-read-private"]
+        "/login/spotify-auth2",//where spotify comes from?
+        passport.authenticate("spotify", { //redirect to spotify
+            scope: ["user-read-email", "user-read-private"] //user limits
             // showDialog: true
+            //this function is always successful for passport
         }),
         (req, res) => {
+            console.log(req.state)
+            console.log(req.user)
+            console.log("used authRoute get /login/spotify-auth")
             // The request will be redirected to spotify for authentication, so this
-            // function will not be called.
+            // function will not be called. No? they should be called only on success of previous
         }
     );
 
-    // @route   GET api/users/callback
+    // @route   GET api/login/spotify-auth/callback
     // @desc    Go to callbackURL after user accepts or denies auth
     // @access  Private
     app.get(
         "/login/spotify-auth/callback",
-        passport.authenticate("spotify", { failureRedirect: "/" }),
-        (req, res) => {
-            res.json(req.user);
+        passport.authenticate("spotify", { failureRedirect: "http://localhost:3000/" }),//in case of not authorizing
+        (req, res) => {//success will execute following, failure does not do these
+            console.log("/login/spotify-auth/callback req func exec")
+            //console.log(req.user)
+            console.log(req.session.state)
+            res.redirect("http://localhost:3000/");
             // // options for accessing "https://api.spotify.com/v1/me"
             // const options = {
             //     url: "https://api.spotify.com/v1/me",
@@ -40,7 +54,7 @@ module.exports = app => {
         }
     );
 
-    // // @route   GET api/users/refresh_token
+    // // @route   GET api/refresh_token
     // // @desc    Refresh access token
     // // @access  Private
     // app.get("/refresh_token", (req, res) => {
@@ -70,12 +84,29 @@ module.exports = app => {
     //     });
     // });
 
-    // @route   POST api/users/logout
+    // @route   GET api/user/current
+    // @desc    Retrieve current user
+    // @access  Public
+    app.get("/user/current", (req, res) => {
+        if (typeof req.user!=='undefined') {
+          res.json({
+            id: req.user.profile.id,
+            username: req.user.profile.username
+          })
+        }
+        else {
+          res.json({ id: -1, username: -1 })
+        }
+    
+      });
+
+    // @route   POST api/logout
     // @desc    Log out user
     // @access  Private
-    app.post("/logout", (req, res) => {
+    app.get("/logout", (req, res) => {
         req.logout();
         res.redirect("/");
+        // req.session.destroy(() => res.redirect("/"));
     });
 
     // Simple route middleware to ensure user is authenticated.
