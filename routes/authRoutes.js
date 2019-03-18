@@ -104,7 +104,7 @@ module.exports = app => {
   // @route   POST api/logout
   // @desc    Log out user
   // @access  Private
-  app.get("/logout", (req, res) => {
+  app.post("/logout", (req, res) => {
     req.logout();
     res.redirect("/");
     // req.session.destroy(() => res.redirect("/"));
