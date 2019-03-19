@@ -8,7 +8,7 @@ const app = express()
 const request = require('request'); // "Request" library
 // app.use(cors({credentials:true, origin: 'https://tune-s.herokuapp.com'}))
 app.use(express.json())    // <==== parse request body as JSON
-app.use(cors({credentials:true, origin: keys.frontend}))
+app.use(cors({credentials:true, origin: [keys.frontend]}))
 console.log("pack", cors)
 // app.use(function (req, res, next) {
 //

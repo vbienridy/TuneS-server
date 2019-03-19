@@ -6,7 +6,7 @@ opts.clientSecret = keys.spotifyClientSecret;
 opts.callbackURL = keys.callBackURL; //callback url from dev
 const dbSave = require("../models/db").dbSave;
 
-module.exports = passport => {
+module.exports = passport => {//
     //spotify
     passport.use(
         new SpotifyStrategy(
@@ -18,9 +18,10 @@ module.exports = passport => {
                     refreshToken: refreshToken,
                     expires_in: expires_in
                 };
-                console.log('dbsave', dbSave)
-                dbSave(payload).catch( (error)=>console.log(//cannot insert do to existing user
-                    'cannot insert',error) ).then( ()=>{console.log("done"); done(null, payload)} )
+                // console.log('dbsave', dbSave)
+                dbSave(payload, ()=>{
+                    done(null, payload)
+                })
                 
                 // process.nextTick(function () { //change for database
                 //     return done(null, payload);

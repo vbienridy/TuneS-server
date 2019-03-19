@@ -3,5 +3,5 @@ module.exports = {
   spotifyClientSecret: process.env.SPOTIFY_CLIENT_SECRET,
   callBackURL: process.env.SPOTIFY_CALLBACK_URL,
     mongodb:process.env.MONGODB_URL,
-    frontend:"https://tune-s.herokuapp.com"
+    frontend:["https://tune-s.herokuapp.com", "http://tune-s.herokuapp.com"]
 };

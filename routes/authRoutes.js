@@ -10,9 +10,14 @@ module.exports = app => {
 
     //http://www.passportjs.org/docs/authenticate/
     //http://expressjs.com/en/api.html#app.get
+    app.get("/session", function(req, res){
+        // console.log(req)
+        res.json(req.user)
+    })
     app.get("/login/spotify-auth", function(req, res){
-        req.session.state = "bbb"//you can set redirect album id here
+        //req.session.state = "bbb"//you can set redirect album id here
         res.redirect("/login/spotify-auth2")
+        // console.log("reded")
     })
     app.get(
         "/login/spotify-auth2",//where spotify comes from?
@@ -22,9 +27,9 @@ module.exports = app => {
             //this function is always successful for passport
         }),
         (req, res) => {
-            console.log(req.state)
-            console.log(req.user)
-            console.log("used authRoute get /login/spotify-auth")
+            // console.log(req.state)
+            // console.log(req.user)
+            // console.log("used authRoute get /login/spotify-auth")
             // The request will be redirected to spotify for authentication, so this
             // function will not be called. No? they should be called only on success of previous
         }
@@ -35,12 +40,12 @@ module.exports = app => {
     // @access  Private
     app.get(
         "/login/spotify-auth/callback",
-        passport.authenticate("spotify", { failureRedirect: "http://localhost:3000/" }),//in case of not authorizing
+        passport.authenticate("spotify", { failureRedirect: keys.frontend[0] }),//in case of not authorizing
         (req, res) => {//success will execute following, failure does not do these
-            console.log("/login/spotify-auth/callback req func exec")
+            //console.log("/login/spotify-auth/callback req func exec")
             //console.log(req.user)
-            console.log(req.session.state)
-            res.redirect("http://localhost:3000/");
+           // console.log(req.session.state)
+            res.redirect(keys.frontend[0]);
             // // options for accessing "https://api.spotify.com/v1/me"
             // const options = {
             //     url: "https://api.spotify.com/v1/me",
@@ -87,25 +92,27 @@ module.exports = app => {
     // @route   GET api/user/current
     // @desc    Retrieve current user
     // @access  Public
-    app.get("/user/current", (req, res) => {
-        if (typeof req.user!=='undefined') {
-          res.json({
-            id: req.user.profile.id,
-            username: req.user.profile.username
-          })
-        }
-        else {
-          res.json({ id: -1, username: -1 })
-        }
+    // app.get("/user/current", (req, res) => { 
+    //     if (typeof req.user!=='undefined') {
+    //       res.json({
+    //         id: req.user.profile.id,
+    //         username: req.user.profile.username
+    //       })
+    //     }
+    //     else {
+    //       res.json({ id: -1, username: -1 })
+    //     }
     
-      });
+    //   });
 
     // @route   POST api/logout
     // @desc    Log out user
     // @access  Private
-    app.get("/logout", (req, res) => {
+    app.post("/logout", (req, res) => {
         req.logout();
-        res.redirect("/");
+        res.json({status: "success"})
+        //https://stackoverflow.com/questions/7042340/error-cant-set-headers-after-they-are-sent-to-the-client
+        
         // req.session.destroy(() => res.redirect("/"));
     });
 
