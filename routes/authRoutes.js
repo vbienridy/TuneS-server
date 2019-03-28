@@ -4,9 +4,62 @@ const request = require("request");
 const querystring = require("querystring");
 
 module.exports = app => {
-    // @route   GET api/login/spotify-auth
-    // @desc    Redirect user to spotify auth
-    // @access  Public
+    app.get("/user/current", (req, res) => {
+        if (typeof req.user === 'undefined') {
+            console.log('wtf')
+            res.json({
+                id: -1,
+                username: -1
+            })
+        }
+        else {
+            User.find({ sid: req.user.profile.id }).exec(function (err, users) {
+                if (err)
+                    return console.log(err);
+                console.log('u', users[0])
+                //console.log(users)
+                if (users.length > 0) {
+                    res.json({ id: req.user.profile.id, username: users[0].displayName })
+                }
+                else {
+                    res.json({
+                        id: -1,
+                        username: -1
+                    })
+                }
+                // 'athletes' is a list
+            })
+        }
+    })
+
+    app.get('/user/profile/:sid', function (req, res) {
+        //console.log(req.user)
+
+        //console.log('id', req.user.profile.id)
+        User.find({ sid: req.params.sid }).exec(function (err, users) {
+            if (err) {
+                return res.status(400).send({
+                    message: 'search user error'
+                })
+            }
+            console.log('vvv, users')
+            if (users.length === 0) {
+                return res.status(400).send({
+                    message: 'cannot find user'
+                })
+
+            }
+            if ((typeof req.user !== 'undefined') && (req.user.sid === req.params.sid)) {
+                return res.json(users[0])
+            }//only return full profile if it's "me"( in session and it's me who fetched)
+
+            return res.json({
+                sid: -1, displayName: users[0].displayName, photo: users[0].photo, country: users[0].country
+
+            })
+        }
+        )
+    })
 
     //http://www.passportjs.org/docs/authenticate/
     //http://expressjs.com/en/api.html#app.get
@@ -37,9 +90,7 @@ module.exports = app => {
         }
     );
 
-    // @route   GET api/login/spotify-auth/callback
-    // @desc    Go to callbackURL after user accepts or denies auth
-    // @access  Private
+
     app.get(
         "/login/spotify-auth/callback",
         passport.authenticate("spotify", { failureRedirect: keys.frontend[0] }),//in case of not authorizing
@@ -71,9 +122,6 @@ module.exports = app => {
     //     });
     // });
 
-    // @route   GET api/user/current
-    // @desc    Retrieve current user
-    // @access  Public
     app.get("/user/current", (req, res) => {
         if (typeof req.user !== 'undefined') {
             res.json({
@@ -89,9 +137,6 @@ module.exports = app => {
 
     });
 
-    // @route   POST api/logout
-    // @desc    Log out user
-    // @access  Private
     app.post("/logout", (req, res) => {
         req.logout();
         res.json({ status: "success" })

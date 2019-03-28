@@ -39,6 +39,9 @@ const userSchema = new mongoose.Schema({
     email: String, // payload.profile.emails[0].value   ?can be empty
     photo: String,//payload.profile.photos[0]  ?can be empty
     country: String, //payload.profile.country
+    likeAlbums: [{ albumId: String }],
+    likeArtists: [{ artistId: String }],
+    likeTracks: [{ trackId: String }],
     albumComments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'AlbumComment' }]
 }, { timestamps: true });// inner timestamps
 
@@ -48,6 +51,7 @@ const albumCommentSchema = new mongoose.Schema({
     anony: Boolean,
     albumId: String,
     sid: String,
+    likedUsers: [{ user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' } }],
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 }, { timestamps: true });// inner timestamps
 
@@ -57,6 +61,7 @@ const artistCommentSchema = new mongoose.Schema({
     anony: Boolean,
     artistId: String,
     sid: String,
+    likedUsers: [{ user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' } }],
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 }, { timestamps: true });// inner timestamps
 
@@ -66,6 +71,7 @@ const trackCommentSchema = new mongoose.Schema({
     anony: Boolean,
     trackId: String,
     sid: String,
+    likedUsers: [{ user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' } }],
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 }, { timestamps: true });// inner timestamps
 
@@ -109,174 +115,3 @@ exports.dbSave = (payload, callback) => { //tested
 // collection the model is tied to, with the default being the
 //  pluralized, lower-cased model name. So with your code, that 
 //  would be 'models'. To use the model with the files collection, change that line to:
-
-exports.app = app => { //tested
-    app.get("/user/current", (req, res) => {
-        if (typeof req.user === 'undefined') {
-            console.log('wtf')
-            res.json({
-                id: -1,
-                username: -1
-            })
-        }
-        else {
-            User.find({ sid: req.user.profile.id }).exec(function (err, users) {
-                if (err)
-                    return console.log(err);
-                console.log('u', users[0])
-                //console.log(users)
-                if (users.length > 0) {
-                    res.json({ id: req.user.profile.id, username: users[0].displayName })
-                }
-                else {
-                    res.json({
-                        id: -1,
-                        username: -1
-                    })
-                }
-                // 'athletes' is a list
-            })
-        }
-    })
-
-    app.get('/user/profile/:sid', function (req, res) {
-        //console.log(req.user)
-
-        //console.log('id', req.user.profile.id)
-        User.find({ sid: req.params.sid }).exec(function (err, users) {
-            if (err) {
-                return res.status(400).send({
-                    message: 'search user error'
-                })
-            }
-            console.log('vvv, users')
-            if (users.length === 0) {
-                return res.status(400).send({
-                    message: 'cannot find user'
-                })
-
-            }
-            if ((typeof req.user !== 'undefined') && (req.user.sid === req.params.sid)) {
-                return res.json(users[0])
-            }//only return full profile if it's "me"( in session and it's me who fetched)
-
-            return res.json({
-                sid: -1, displayName: users[0].displayName, photo: users[0].photo, country: users[0].country
-
-            })
-        }
-        )
-    })
-
-    app.post('/api/track/:id/comment', function (req, res) {
-        //console.log(req.params.search, 1)
-        let comment = new Comment({ content: req.body.comment, anony: true, trackId: req.params.id });
-        // console.log(req.body.comment)
-
-        comment.save(function (err, comment) {
-            //console.log("save tried")
-            if (err) return console.log(err);
-            res.json(req.body)
-            // we're connected!
-        });
-        //what if returned?
-
-        //res.json({status: "fail"}) //if not successful
-    })
-
-    app.get('/api/track/:id/comments', function (req, res) {//better paractice is to use references in mongoose
-        //console.log("searching")
-        Comment.find(
-            { trackId: req.params.id }).sort({ updatedAt: -1 }).exec(
-                function (err, comments) {
-                    if (err)
-                        return console.log(err);
-                    res.json(comments)
-                    // 'athletes' is a list
-                })
-            ;
-
-        //what if returned?
-
-        //res.json({status: "fail"}) //if not successful
-    });//previous comment schemas also included in find result...
-
-    app.post('/api/album/:id/comment', function (req, res) {
-
-        //console.log(req.params.search, 1)
-        if (typeof req.user === undefined) {
-            return res.status(400).send({
-                message: 'session expired'
-            })
-        }
-
-        User.find({ sid: req.user.profile.id }).exec(function (err, users) {
-            if (err) {
-                return res.status(400).send({
-                    message: 'search user error'
-                })
-            }
-            if (users.length === 0) {
-                return res.status(400).send({
-                    message: 'not found user in database'
-                })
-            }
-
-            let comment = new AlbumComment({
-                content: req.body.comment, anony: false, albumId: req.params.id,
-                user: users[0]._id
-            });
-
-            comment.save(function (err, comment) {
-                //console.log("save tried")
-                if (err) {
-                    return res.status(400).send({
-                        message: 'unable to save comment'
-                    })
-                }
-                // console.log('y', comment)
-                //console.log(comment)
-
-                res.json(comment)
-                // we're connected!
-            });
-        })
-
-        // console.log(req.body.comment)
-
-        //what if returned?
-
-        //res.json({status: "fail"}) //if not successful
-    });
-
-    app.get('/api/album/:id/comments', function (req, res) {//better paractice is to use references in mongoose
-        console.log("searching")
-        AlbumComment.find(
-            { albumId: req.params.id }).populate('user', ['displayName', 'photo', 'sid']).sort({ updatedAt: -1 }).exec(
-                function (err, comments) {
-                    if (err) {
-                        return res.status(400).send({
-                            message: 'unable to find comments'
-                        })
-                    }
-                    console.log(comments)
-                    res.json(comments)
-                    // 'athletes' is a list
-                })
-
-            ;
-        //return json:
-        // [ { _id: 5c904c086c56ec4ce336493a,
-        //     content: 'asd',
-        //     anony: false,
-        //     albumId: '3T4tUhGYeRNVUGevb0wThu',
-        //     user:
-        //      { _id: 5c904be8c6991d796841f198, displayName: 'yang', photo: '' },
-        //     createdAt: 2019-03-19T01:55:20.865Z,
-        //     updatedAt: 2019-03-19T01:55:20.865Z,
-        //     __v: 0 } ]
-    });
-
-
-
-}
