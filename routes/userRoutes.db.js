@@ -1,5 +1,8 @@
 const keys = require("../config/keys");
 const passport = require("passport");
+const mongoose = require("mongoose");
+const userSchema = require("../models/user.schema");
+const userModel = mongoose.model("UserModel", userSchema); 
 var userDao = require("../models/user.dao");
 
 module.exports = app => {
@@ -46,31 +49,30 @@ module.exports = app => {
   });
 
   app.get("/user/profile/:uid", function(req, res) {
-    User.find({ uid: req.params.uid }).exec(function(err, users) {
+    userModel.findOne({ uid: req.params.uid }).exec(function(err, user) {
       if (err) {
         return res.status(400).send({
           message: "search user error"
         });
       }
-
-      if (users.length === 0) {
+      if (!user) {
         return res.status(400).send({
           message: "cannot find user"
         });
+      } else {
+        if (
+          typeof req.user !== "undefined" &&
+          req.user.uid === req.params.uid
+        ) {
+          return res.json(user);
+        }
+        return res.json({
+          uid: -1,
+          displayName: user.displayName,
+          photo: user.photo,
+          country: user.country
+        });
       }
-      if (
-        typeof req.user !== "undefined" &&
-        req.user.uid === req.params.uid
-      ) {
-        return res.json(users[0]);
-      }
-
-      return res.json({
-        uid: -1,
-        displayName: users[0].displayName,
-        photo: users[0].photo,
-        country: users[0].country
-      });
     });
   });
 };

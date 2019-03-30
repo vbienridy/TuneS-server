@@ -9,9 +9,7 @@ const commentSchema = new mongoose.Schema(
     content: String,
     subjectType: String,
     subjectId: String,
-    likedUsers: [
-      { user: { type: mongoose.Schema.Types.ObjectId, ref: "UserModel" } }
-    ]
+    userLikes: [{ type: mongoose.Schema.Types.ObjectId, ref: "UserModel" }]
   },
   { timestamps: true }
 ); // inner timestamps
