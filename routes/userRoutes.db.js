@@ -46,30 +46,34 @@ module.exports = app => {
   });
 
   app.get("/user/profile/:uid", function(req, res) {
-    userModel.findOne({ uid: req.params.uid }).exec(function(err, user) {
-      if (err) {
-        return res.status(400).send({
-          message: "search user error"
-        });
-      }
-      if (!user) {
-        return res.status(400).send({
-          message: "cannot find user"
-        });
-      } else {
-        if (
-          typeof req.user !== "undefined" &&
-          req.user.uid === req.params.uid
-        ) {
-          return res.json(user);
+    userModel
+      .findOne({ uid: req.params.uid })
+      .populate("comments")
+      .populate("commentLikes")
+      .exec(function(err, user) {
+        if (err) {
+          return res.status(400).send({
+            message: "search user error"
+          });
         }
-        return res.json({
-          uid: -1,
-          displayName: user.displayName,
-          photo: user.photo,
-          country: user.country
-        });
-      }
-    });
+        if (!user) {
+          return res.status(400).send({
+            message: "cannot find user"
+          });
+        } else {
+          if (
+            typeof req.user !== "undefined" &&
+            req.user.uid === req.params.uid
+          ) {
+            return res.json(user);
+          }
+          return res.json({
+            uid: -1,
+            displayName: user.displayName,
+            photo: user.photo,
+            country: user.country
+          });
+        }
+      });
   });
 };
