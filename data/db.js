@@ -4,7 +4,7 @@ module.exports = function () {
   const databaseName = 'tunes';
   var connectionString = keys.mongodb; 
   connectionString += databaseName;
-  mongoose.connect(connectionString, { useNewUrlParser: true });
+  mongoose.connect(connectionString, { useMongoClient: true, useNewUrlParser: true });
 
   var db = mongoose.connection;
   db.on('error', console.error.bind(console, 'MongoDB connection error:'));
