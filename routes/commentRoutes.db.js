@@ -49,6 +49,7 @@ module.exports = app => {
         subjectType: req.params.type,
         subjectId: req.params.id
       })
+      // .populate("user")
       // .populate("user", ["displayName", "photo", "uid"])
       .sort({ updatedAt: -1 })
       .exec(function(err, comments) {
