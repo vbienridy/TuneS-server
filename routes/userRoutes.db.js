@@ -1,9 +1,7 @@
 const keys = require("../config/keys");
 const passport = require("passport");
-const mongoose = require("mongoose");
-const userSchema = require("../models/user.schema");
-const userModel = mongoose.model("UserModel", userSchema); 
-var userDao = require("../models/user.dao");
+const userModel = require("../models/user.model");
+const userDao = require("../models/user.dao");
 
 module.exports = app => {
   app.get("/session", function(req, res) {
@@ -19,8 +17,7 @@ module.exports = app => {
     passport.authenticate("spotify", {
       scope: ["user-read-email", "user-read-private"]
     }),
-    (req, res) => {
-    }
+    (req, res) => {}
   );
 
   app.get(
@@ -35,7 +32,7 @@ module.exports = app => {
     req.logout();
     res.json({ status: "success" });
   });
-  
+
   app.get("/user/current", (req, res) => {
     if (typeof req.user === "undefined") {
       res.json({

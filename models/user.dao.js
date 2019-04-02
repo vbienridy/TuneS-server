@@ -1,34 +1,36 @@
-const mongoose = require('mongoose');
-const userSchema = require('./user.schema');
-const userModel = mongoose.model('UserModel', userSchema);
+const mongoose = require("mongoose");
+const userModel = require("./user.model");
 
-findAllUsers = () =>
-  userModel.find();
+findAllUsers = () => userModel.find();
 
 findUserByUserId = (uid, callback) => {
-  userModel.findOne({ uid: uid }).populate("comments").populate("commentLikes").exec(function (err, user) {
-    if (err) {
-      return console.log(err);
-    }
+  userModel
+    .findOne({ uid: uid })
+    .populate("comments")
+    .populate("commentLikes")
+    .exec(function(err, user) {
+      if (err) {
+        return console.log(err);
+      }
 
-    if (user) {
-      return callback({
-        uid: uid,
-        displayName: user.displayName,
-        photo: user.photo
-      });
-    } else {
-      return callback({
-        uid: -1,
-        displayName: -1,
-        photo: -1
-      });
-    }
-  });
+      if (user) {
+        return callback({
+          uid: uid,
+          displayName: user.displayName,
+          photo: user.photo
+        });
+      } else {
+        return callback({
+          uid: -1,
+          displayName: -1,
+          photo: -1
+        });
+      }
+    });
 };
 
 saveUser = (user, callback) => {
-  userModel.findOne({ uid: user.uid }).exec(function (err, res) {
+  userModel.findOne({ uid: user.uid }).exec(function(err, res) {
     if (err) {
       return console.log(err);
     }
@@ -45,15 +47,11 @@ saveUser = (user, callback) => {
     }
     return callback();
   });
-
-}
+};
 
 updateUser = (uid, user) => userModel.update({ uid: uid }, { $set: user });
 
-module.exports = { userModel, findAllUsers, findUserByUserId, saveUser, updateUser };
-
-
-
+module.exports = { findAllUsers, findUserByUserId, saveUser, updateUser };
 
 // const payload = {
 //     profile: profile, //profile.id
@@ -81,6 +79,5 @@ module.exports = { userModel, findAllUsers, findUserByUserId, saveUser, updateUs
 //     { upsert: true }, (err, res) => { if (err) { return }; callback() })
 //   //if found a match, performs update, ignoring setOnInsert
 //   //if not found a match:insert by setOnInsert
-
 
 // }
