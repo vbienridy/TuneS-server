@@ -1,13 +1,11 @@
-const mongoose = require('mongoose'); 
-const userSchema = require('../models/user.schema'); 
-const userModel = mongoose.model("UserModel", userSchema); 
-const commentSchema = require('../models/comment.schema');
-const commentModel = mongoose.model('CommentModel', commentSchema);
+const mongoose = require('mongoose');
+const userModel = require("../models/user.dao").userModel;
+const commentModel = require("../models/comment.dao");
 
 module.exports = app => {
   // route for adding comments
-  app.post("/api/comment/:type/:id", function(req, res) {
-    userModel.findOne({ uid: req.user.profile.id }).exec(function(err, user) {
+  app.post("/api/comment/:type/:id", function (req, res) {
+    userModel.findOne({ uid: req.user.profile.id }).exec(function (err, user) {
       if (err) {
         return res.status(400).send({
           message: "search user error"
@@ -36,8 +34,10 @@ module.exports = app => {
           userModel.update(
             { _id: user._id },
             { $push: { comments: commentDoc._id } }
-          ).exec();
-          res.json(comment);
+          ).exec(function (err, raw) {
+            res.json(comment);
+          });
+
         }
       });
 
@@ -47,7 +47,7 @@ module.exports = app => {
 
 
   // route for retrieving comments
-  app.get("/api/comments/:type/:id/", function(req, res) {
+  app.get("/api/comments/:type/:id/", function (req, res) {
     //better paractice is to use references in mongoose
     console.log("searching");
     commentModel.find({
@@ -56,7 +56,7 @@ module.exports = app => {
     })
       // .populate("user", ["displayName", "photo", "uid"])
       .sort({ updatedAt: -1 })
-      .exec(function(err, comments) {
+      .exec(function (err, comments) {
         if (err) {
           return res.status(400).send({
             message: "unable to find comments"
@@ -77,4 +77,25 @@ module.exports = app => {
     //     updatedAt: 2019-03-19T01:55:20.865Z,
     //     __v: 0 } ]
   });
+
+  // route for retrieving comments for loggedin user
+  app.get("/api/user/current/comments", function (req, res) {
+    userModel.findOne({ uid: req.user.profile.id }).populate("comments").exec(function (err, user) {
+      if (err) {
+        return res.status(400).send({
+          message: "search user error"
+        });
+      }
+
+      if (!user) {
+        return res.status(400).send({
+          message: "not found user in database"
+        });
+      }
+
+      res.json(user.comments);
+
+    })
+  })
+
 };

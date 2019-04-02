@@ -1,12 +1,12 @@
-const mongoose = require('mongoose'); 
-const userSchema = require('./user.schema'); 
-const userModel = mongoose.model('UserModel', userSchema); 
+const mongoose = require('mongoose');
+const userSchema = require('./user.schema');
+const userModel = mongoose.model('UserModel', userSchema);
 
 findAllUsers = () =>
   userModel.find();
 
 findUserByUserId = (uid, callback) => {
-  userModel.findOne({ uid: uid }).exec(function(err, user) {
+  userModel.findOne({ uid: uid }).exec(function (err, user) {
     if (err) {
       return console.log(err);
     }
@@ -28,7 +28,7 @@ findUserByUserId = (uid, callback) => {
 };
 
 saveUser = (user, callback) => {
-  userModel.findOne({ uid: user.uid }).exec(function(err, res) {
+  userModel.findOne({ uid: user.uid }).exec(function (err, res) {
     if (err) {
       return console.log(err);
     }
@@ -45,12 +45,12 @@ saveUser = (user, callback) => {
     }
     return callback();
   });
-  
+
 }
 
 updateUser = (uid, user) => userModel.update({ uid: uid }, { $set: user });
 
-module.exports = { findAllUsers, findUserByUserId, saveUser, updateUser };
+module.exports = { userModel, findAllUsers, findUserByUserId, saveUser, updateUser };
 
 
 
