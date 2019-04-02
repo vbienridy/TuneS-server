@@ -1,11 +1,11 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const userSchema = require("./user.schema");
 
 // commentSchema
 const commentSchema = new mongoose.Schema(
   {
-    // user: { type: mongoose.Schema.Types.ObjectId, ref: "UserModel" },
-    user: userSchema,
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "UserModel" },
+    // user: userSchema,
     content: String,
     subjectType: String,
     subjectId: String,
