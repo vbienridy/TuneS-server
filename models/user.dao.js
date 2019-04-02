@@ -6,7 +6,7 @@ findAllUsers = () =>
   userModel.find();
 
 findUserByUserId = (uid, callback) => {
-  userModel.findOne({ uid: uid }).exec(function (err, user) {
+  userModel.findOne({ uid: uid }).populate("comments").populate("commentLikes").exec(function (err, user) {
     if (err) {
       return console.log(err);
     }
