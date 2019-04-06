@@ -1,3 +1,3 @@
 const mongoose = require("mongoose");
-const subjectModel = require("./subject.model");
+const subjectModel = require("../models/subject.model");
 module.exports = {};

@@ -1,11 +1,11 @@
 const SpotifyStrategy = require("passport-spotify").Strategy;
 const keys = require("./keys");
-const opts = {};
-opts.clientID = keys.spotifyClientID;
-opts.clientSecret = keys.spotifyClientSecret;
-opts.callbackURL = keys.callBackURL; //callback url from dev
-// const dbSave = require("../data/db").dbSave;
-const userDao = require('../models/user.dao');
+const opts = {
+  clientID: keys.spotifyClientID,
+  clientSecret: keys.spotifyClientSecret,
+  callbackURL: keys.callBackURL
+};
+const userDao = require('../daos/user.dao');
 
 module.exports = passport => {//
   //spotify
@@ -24,20 +24,25 @@ module.exports = passport => {//
         //   done(null, payload)
         // })
         const user = {
-            uid: payload.profile.id,
-            displayName: payload.profile.displayName,
-            email:
-              payload.profile.emails.length > 0
-                ? payload.profile.emails[0].value
-                : "",
-            photo:
-              payload.profile.photos.length > 0
-                ? payload.profile.photos[0]
-                : "",
-            country: payload.profile.country
-          };
-          console.log(user);
-        userDao.saveUser(user, () => {
+          _id: profile.id,
+          displayName: profile.displayName,
+          email:
+            profile.emails.length > 0
+              ? profile.emails[0].value
+              : "",
+          photo:
+            profile.photos.length > 0
+              ? profile.photos[0]
+              : "",
+          country: profile.country,
+          bio: "",
+          type: 1
+        };
+
+        console.log(user);
+
+        userDao.saveUser(user, userDoc => {
+          console.log(userDoc);
           done(null, payload);
         });
 

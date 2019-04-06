@@ -1,11 +1,17 @@
 const mongoose = require('mongoose');
 
-// subjectSchema
-const subjectSchema = new mongoose.Schema({
-  subjectId: String,
-  subjectType: String,
-  subjectTitle: String,
-  subjectPhoto: String
-}, { timestamps: true }); // inner timestamps
+const subjectSchema = new mongoose.Schema(
+  {
+    _id: String, // spotify subject id
+    type: String,
+    title: String,
+    image: String,
+    likeCount: Number
+  },
+  { 
+    collection: 'subjects', 
+    timestamps: true 
+  }
+);
 
 module.exports = subjectSchema;

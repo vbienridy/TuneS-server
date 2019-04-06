@@ -1,54 +1,54 @@
 const mongoose = require("mongoose");
-const userSchema = require("./user.schema");
-const userModel = mongoose.model("UserModel", userSchema);
+const userModel = require("../models/user.model");
 
 findAllUsers = () => userModel.find();
 
-findUserByUserId = (uid, callback) => {
-  userModel
-    .findOne({ uid: uid })
-    .populate("comments")
-    .populate("commentLikes")
-    .exec(function(err, user) {
-      if (err) {
-        return console.log(err);
-      }
-
-      if (user) {
-        return callback(user);
-      } else {
-        return callback({
-          uid: -1,
-          displayName: -1,
-          photo: -1
-        });
-      }
-    });
-};
-
-saveUser = (user, callback) => {
-  userModel.findOne({ uid: user.uid }).exec(function(err, res) {
-    if (err) {
-      return console.log(err);
-    }
-    if (!res) {
-      console.log("user saved");
-      userModel.create(user, (err, userDoc) => {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log(userDoc);
-          return callback();
-        }
-      });
-    }
-    return callback();
+findUserById = (userId, callback) => {
+  console.log(userId);
+  userModel.findOne({ _id: userId }).exec(function(err, user) {
+    return callback(err, user)
   });
 };
 
-updateUser = (uid, user) => userModel.update({ uid: uid }, { $set: user });
+saveUser = (user, callback) => {
+  userModel.findOne({ _id: user._id }).exec(function(err, res) {
+    if (err) {
+      console.log(err);
+      return;
+    }
 
-module.exports = { findAllUsers, findUserByUserId, saveUser, updateUser };
+    // user not found and will be saved to db
+    if (!res) {
+      userModel.create(user, (err, userDoc) => {
+        if (err) {
+          console.log("aaaaa");
+          console.log(err);
+          return;
+        } else {
+          console.log("sssss");
+          console.log("user saved");
+          console.log(userDoc);
+          return callback(userDoc);
+        }
+      });
+    }
+
+    // user found in db
+    return callback(res);
+  });
+};
+
+updateUser = (user, res) => {
+  console.log(user);
+  userModel.updateOne({ _id: user._id }, { $set: user }, function(err) {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    return res.status(200).send({ message: "user updated" });
+  });
+}
+
+module.exports = { findAllUsers, findUserById, saveUser, updateUser };
 
 // const payload = {
 //     profile: profile, //profile.id

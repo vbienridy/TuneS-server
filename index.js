@@ -33,10 +33,10 @@ app.use(passport.session());
 // Passport Config
 require("./config/passport")(passport);
 
-require("./routes/userRoutes.db")(app);
-require("./routes/browseRoutes")(app);
-require("./routes/commentRoutes.db")(app);
-require("./routes/likeRoutes.db")(app);
+require("./routes/user.route")(app);
+require("./routes/browse.route")(app);
+require("./routes/comment.route")(app);
+require("./routes/like.route")(app);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT);
