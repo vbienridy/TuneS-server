@@ -48,7 +48,33 @@ updateUser = (user, res) => {
   });
 }
 
-module.exports = { findAllUsers, findUserById, saveUser, updateUser };
+getUserCount = res => {
+  userModel
+    .find({type: 1})
+    .exec(function(err, users1) {
+      if (err) {
+        return res.status(500).send(err);
+      }
+      userModel.find({ type: 2 }).exec(function(err, users2) {
+        if (err) {
+          return res.status(500).send(err);
+        }
+        const userCount = {
+          u1: users1.length,
+          u2: users2.length
+        };
+        return res.status(200).send(userCount);
+      });
+    });
+};
+
+module.exports = {
+  findAllUsers,
+  findUserById,
+  saveUser,
+  updateUser,
+  getUserCount
+};
 
 // const payload = {
 //     profile: profile, //profile.id

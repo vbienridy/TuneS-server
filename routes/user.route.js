@@ -71,4 +71,8 @@ module.exports = app => {
   app.put("/user/current", function(req, res) {
     userDao.updateUser(req.body, res);
   });
+
+  app.get("/usercount", function(req, res) {
+    userDao.getUserCount(res);
+  });
 };

@@ -1,6 +1,8 @@
 const request = require('request'); // "Request" library
 const keys = require('../config/keys');
 
+const subjectDao = require("../daos/subject.dao");
+
 // your application requests authorization
 const authOptions = {
   url: 'https://accounts.spotify.com/api/token',
@@ -14,6 +16,7 @@ const authOptions = {
 };
 
 module.exports = app => {
+  // search subject by name
   app.get('/api/search/:search/type/:type', function (req, res) {
     request.post(authOptions, function (error, response, body) {
       if (!error && response.statusCode === 200) {
@@ -39,10 +42,10 @@ module.exports = app => {
         //res.send('hello world')
       }
     });
-  })
+  });
 
   // get subject content from spotify api
-  app.get('/api/:type/:id', function (req, res) {
+  app.get('/api/subject/:type/:id', function (req, res) {
     request.post(authOptions, function (error, response, body) {
       if (!error && response.statusCode === 200) {
         const token = body.access_token;
@@ -62,6 +65,11 @@ module.exports = app => {
         });
       }
     });
-  })
+  });
+
+  app.get('/api/subject/top', function (req, res) {
+    console.log("findTop")
+    subjectDao.findTopSubjects(res);
+  });
 
 }
