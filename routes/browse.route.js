@@ -37,7 +37,7 @@ module.exports = app => {
         request.get(options2, function (error, response, body) {
           //error handling here can be better
           //console.log(body);
-          res.json(body)
+          return res.json(body)
         });
         //res.send('hello world')
       }
@@ -61,7 +61,7 @@ module.exports = app => {
           json: true
         };
         request.get(options2, function (error, response, body) {
-          res.json(body);
+          return res.json(body);
         });
       }
     });

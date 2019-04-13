@@ -40,22 +40,22 @@ module.exports = app => {
     likeDao.findCommentLikesByUserId(req.params.id, res);
   });
 
-  // delete subject like
-  app.delete("/api/user/:id/likes/subject", function(req, res) {
-    likeDao.deleteSubjectLike(
-      req.user.profile.id,
-      req.params.id,
-      res
-    );
-  });
+  // // delete subject like
+  // app.delete("/api/user/:id/likes/subject", function(req, res) {
+  //   likeDao.deleteSubjectLike(
+  //     req.user.profile.id,
+  //     req.params.id,
+  //     res
+  //   );
+  // });
 
-  // delete comment like
-  app.delete("/api/user/:id/likes/comment", function(req, res) {
-    likeDao.deleteCommentLike(
-      req.user.profile.id,
-      req.params.id,
-      res
-    );
-  });
+  // // delete comment like
+  // app.delete("/api/user/:id/likes/comment", function(req, res) {
+  //   likeDao.deleteCommentLike(
+  //     req.user.profile.id,
+  //     req.params.id,
+  //     res
+  //   );
+  // });
 
 };

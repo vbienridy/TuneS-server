@@ -11,31 +11,36 @@ findUserById = (userId, callback) => {
 };
 
 saveUser = (user, callback) => {
-  userModel.findOne({ _id: user._id }).exec(function(err, res) {
-    if (err) {
-      console.log(err);
-      return;
-    }
+  return userModel.collection.update({_id: user._id}, { $setOnInsert: user },
+    { upsert: true }, (err, res)=>{ if(err){ console.log(err);return}; callback() })
 
-    // user not found and will be saved to db
-    if (!res) {
-      userModel.create(user, (err, userDoc) => {
-        if (err) {
-          console.log("aaaaa");
-          console.log(err);
-          return;
-        } else {
-          console.log("sssss");
-          console.log("user saved");
-          console.log(userDoc);
-          return callback(userDoc);
-        }
-      });
-    }
 
-    // user found in db
-    return callback(res);
-  });
+  //this is not transcational for dababase, deprecated
+  // userModel.findOne({ _id: user._id }).exec(function(err, res) {
+  //   if (err) {
+  //     console.log(err);
+  //     return;
+  //   }
+
+  //   // user not found and will be saved to db
+  //   if (!res) {
+  //     userModel.create(user, (err, userDoc) => {
+  //       if (err) {
+  //         console.log("aaaaa");
+  //         console.log(err);
+  //         return;
+  //       } else {
+  //         console.log("sssss");
+  //         console.log("user saved");
+  //         console.log(userDoc);
+  //         return callback(userDoc);
+  //       }
+  //     });
+  //   }
+
+  //   // user found in db
+  //   return callback(res);
+  // });
 };
 
 updateUser = (user, res) => {

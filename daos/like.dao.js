@@ -68,7 +68,7 @@ findCommentLikesByUserId = (userId, res) => {
     });
 };
 
-likeSubject = (userId, subject, res) => {
+likeSubject = (userId, subject, res) => {//this is not transactional, but promised for performance
   subject["likeCount"] = 1;
   console.log(subject);
   userModel.findOne({ _id: userId }).exec(function(err, user) {
@@ -86,9 +86,9 @@ likeSubject = (userId, subject, res) => {
           if (err) {
             return res.status(500).send(err);
           }
-          if (!subjectDoc) {
+          if (!subjectDoc) {//not transactional
             console.log("subject not found, create one");
-            subjectModel.create(subject, (err, subjectDoc) => {
+            subjectModel.collection.save(subject, (err, subjectDoc) => {
               console.log(subjectDoc);
               if (err) {
                 return res.status(500).send(err);
@@ -173,7 +173,8 @@ likeSubject = (userId, subject, res) => {
 };
 
 
-likeComment = (userId, commentId, res) => {
+likeComment = (userId, commentId, res) => {//not transcational, so user may like a comment that does not exist
+  //not using transcation for performance
   userModel.findOne({ _id: userId }).exec(function(err, user) {
     if (err) {
       return res.status(500).send(err);
@@ -183,21 +184,23 @@ likeComment = (userId, commentId, res) => {
         message: "user not found in database"
       });
     } else {
+      console.log('search',{ type: "COMMENT", user: userId, comment: commentId})
       likeModel
-        .findOne({ type: "COMMENT", user: userId, comment: commentId })
+        .findOne({ type: "COMMENT", user: userId, comment: commentId})
         .exec(function(err, like) {
           if (err) {
             return res.status(500).send(err);
           }
+          console.log('like?', like)
           if (!like) {
             console.log("comment like not found, create one");
-            likeModel.create(
-              { type: "COMMENT", user: userId, comment: commentId },
+            likeModel.collection.save(
+              { type: "COMMENT", user: userId, comment: mongoose.Types.ObjectId(commentId) },
               (err, likeDoc) => {
                 if (err) {
                   return res.status(500).send(err);
                 }
-                console.log(likeDoc);
+                // console.log(likeDoc);
                 return res.status(200).send(likeDoc);
               }
             );
@@ -239,39 +242,39 @@ likeComment = (userId, commentId, res) => {
   });
 };
 
-deleteSubjectLike = (userId, subjectId, res) => {
-  userModel.findOne({ _id: userId }).exec(function(err, user) {
-    if (err) {
-      return res.status(500).send(err);
-    }
-    if (!user) {
-      return res.status(500).send({
-        message: "user not found in database"
-      });
-    }
-    likeModel.deleteOne({ type: "SUBJECT", user: userId, subject: subjectId});
-    return res.status(200).send({ message: "subject like removed" });
-  });
-}
+// deleteSubjectLike = (userId, subjectId, res) => {
+//   userModel.findOne({ _id: userId }).exec(function(err, user) {
+//     if (err) {
+//       return res.status(500).send(err);
+//     }
+//     if (!user) {
+//       return res.status(500).send({
+//         message: "user not found in database"
+//       });
+//     }
+//     likeModel.deleteOne({ type: "SUBJECT", user: userId, subject: subjectId});
+//     return res.status(200).send({ message: "subject like removed" });
+//   });
+// }
 
-delteCommentLike = (userId, commentId, res) => {
-  userModel.findOne({ _id: userId }).exec(function(err, user) {
-    if (err) {
-      return res.status(500).send(err);
-    }
-    if (!user) {
-      return res.status(500).send({
-        message: "user not found in database"
-      });
-    }
-    likeModel.deleteOne({
-      type: "COMMENT",
-      user: userId,
-      comment: commentId
-    });
-    return res.status(200).send({ message: "comment like removed" });
-  });
-}
+// deleteCommentLike = (userId, commentId, res) => {
+//   userModel.findOne({ _id: userId }).exec(function(err, user) {
+//     if (err) {
+//       return res.status(500).send(err);
+//     }
+//     if (!user) {
+//       return res.status(500).send({
+//         message: "user not found in database"
+//       });
+//     }
+//     likeModel.deleteOne({
+//       type: "COMMENT",
+//       user: userId,
+//       comment: commentId
+//     });
+//     return res.status(200).send({ message: "comment like removed" });
+//   });
+// }
 
 module.exports = {
   findSubjectIsLiked,

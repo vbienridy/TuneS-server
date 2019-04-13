@@ -27,10 +27,10 @@ module.exports = app => {
     );
   });
 
-  // update comment
-  app.put("/api/current/comment/:id", function(req, res) {
-    commentDao.updateComment(req.user.profile.id, req.body, res);
-  });
+  // // update comment
+  // app.put("/api/current/comment/:id", function(req, res) {
+  //   commentDao.updateComment(req.user.profile.id, req.body, res);
+  // });
 
   // delete comment
   app.delete("/api/current/comment/:id", function(req, res) { 

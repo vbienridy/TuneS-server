@@ -39,11 +39,12 @@ module.exports = passport => {//
           type: 1
         };
 
-        console.log(user);
-
-        userDao.saveUser(user, userDoc => {
-          console.log(userDoc);
-          done(null, payload);
+        // console.log(user);
+        // console.log('passport.js line43 run')
+        userDao.saveUser(user, () => {
+          // console.log(userDoc);
+          // console.log('doing')
+          done(null, payload);//after user added to database, user can be in session
         });
 
         // process.nextTick(function () { //change for database

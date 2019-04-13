@@ -36,20 +36,21 @@ module.exports = app => {
 
   // get current user profile
   app.get("/user/current", (req, res) => {
+    console.log('looking')
     if (typeof req.user === "undefined") {
-      res.status(200).send({
+      return res.status(200).send({
         _id: -1
       });
     } else {
       userDao.findUserById(req.user.profile.id, (err, user) => {
         if (err) {
-          res.status(500).send(err);
+          return res.status(500).send(err);
         }
         if (!user) {
           console.log("cannot find user");
-          res.status(200).send({ _id: -1 });
+          return res.status(200).send({ _id: -1 });
         }
-        res.status(200).send(user);
+        return res.status(200).send(user);
       });
     }
   });
@@ -58,12 +59,12 @@ module.exports = app => {
   app.get("/user/:id", function(req, res) {
     userDao.findUserById(req.params.id, (err, user) => {
       if (err) {
-        res.status(500).send(err);
+        return res.status(500).send(err);
       }
       if (!user) {
-        res.status(200).send({ _id: -1 });
+        return res.status(200).send({ _id: -1 });
       }
-      res.status(200).send(user);
+      return res.status(200).send(user);
     });
   });
   
