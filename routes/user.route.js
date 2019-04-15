@@ -70,7 +70,7 @@ module.exports = app => {
   
   // update user profile
   app.put("/user/current", function(req, res) {
-    userDao.updateUser(req.body, res);
+    userDao.updateUser(req, res);
   });
 
   app.get("/usercount", function(req, res) {

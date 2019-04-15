@@ -37,6 +37,7 @@ require("./routes/user.route")(app);
 require("./routes/browse.route")(app);
 require("./routes/comment.route")(app);
 require("./routes/like.route")(app);
+require("./routes/subject.route")(app);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT);

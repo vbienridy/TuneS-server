@@ -7,6 +7,9 @@ mongodb local: mongod --port 12345
 1.user not in session- error
 2.user in session but not in database --error
 3. user in session and in database --OK
+
+find by string for onjectId is OK, object is will go to frontend string
+but set string as objectId in ref is not OK, need  ObjectId(string) to convert
 #
 saveUser in user.dao.js changed to transactional database access, han's previous change is not transactional, thus may lead to unexpected database change
  = (user, callback) => {

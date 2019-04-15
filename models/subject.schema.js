@@ -6,7 +6,8 @@ const subjectSchema = new mongoose.Schema(
     type: String,
     title: String,
     image: String,
-    likeCount: Number
+    likeCount: Number,
+    intro: String //album intro
   },
   { 
     collection: 'subjects', 
