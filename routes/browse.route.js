@@ -17,7 +17,8 @@ const authOptions = {
 
 module.exports = app => {
   // search subject by name
-  app.get('/api/search/:search/type/:type', function (req, res) {
+  app.get('/api/search/:search/type/:type/offset/:offset', function (req, res) {
+    console.log("search offset" + req.params.offset);
     request.post(authOptions, function (error, response, body) {
       if (!error && response.statusCode === 200) {
         // use the access token to access the Spotify Web API
@@ -28,7 +29,9 @@ module.exports = app => {
             "https://api.spotify.com/v1/search?q=" +
             req.params.search +
             "&type=" +
-            req.params.type,
+            req.params.type +
+            "&offset=" +
+            req.params.offset,
           headers: {
             Authorization: "Bearer " + token
           },
