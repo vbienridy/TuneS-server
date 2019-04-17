@@ -7,8 +7,8 @@ const subjectSchema = new mongoose.Schema(
     title: String,
     image: String,
     likeCount: Number,
-    intro: String, // album intro
-    lyric: String // track lyrics
+    intro: String, // album or artist intro
+    lyric: String // track lyric
   },
   {
     collection: "subjects",
