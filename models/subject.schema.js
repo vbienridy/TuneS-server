@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const subjectSchema = new mongoose.Schema(
   {
@@ -7,11 +7,12 @@ const subjectSchema = new mongoose.Schema(
     title: String,
     image: String,
     likeCount: Number,
-    intro: String //album intro
+    intro: String, // album intro
+    lyric: String // track lyrics
   },
-  { 
-    collection: 'subjects', 
-    timestamps: true 
+  {
+    collection: "subjects",
+    timestamps: true
   }
 );
 
