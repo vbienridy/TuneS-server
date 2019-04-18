@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const subjectSchema = new mongoose.Schema(
   {
     _id: String, // spotify subject id
-    type: String,
+    type: { type: String, enum: ["track", "album", "artist"] },
     title: String,
     image: String,
     likeCount: Number,

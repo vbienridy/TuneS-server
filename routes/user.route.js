@@ -7,7 +7,7 @@ module.exports = app => {
     res.status(200).send(req.user);
   });
 
-  app.get("/login/spotify-auth", function (req, res) {
+  app.get("/login/spotify-auth", function(req, res) {
     res.redirect("/login/spotify-auth2");
   });
 
@@ -28,6 +28,20 @@ module.exports = app => {
     }
   );
 
+  app.post(
+    "/login",
+    passport.authenticate("local", {
+      failureRedirect: keys.frontend[0]
+    }),
+    (req, res) => {
+      res.status(200).send(req.user);
+    }
+  );
+
+  app.post("/register", (req, res) => {
+    userDao.register(req.body, res);
+  });
+
   app.post("/logout", (req, res) => {
     console.log("logout");
     req.logout();
@@ -42,7 +56,7 @@ module.exports = app => {
         _id: -1
       });
     } else {
-      userDao.findUserById(req.user.profile.id, (err, user) => {
+      userDao.findUserById(req.user._id, (err, user) => {
         if (err) {
           return res.status(500).send(err);
         }

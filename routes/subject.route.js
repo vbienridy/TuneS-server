@@ -9,7 +9,7 @@ module.exports = app => {
     }
     console.log("mi2");
 
-    userDao.findUserById(req.user.profile.id, (err, user) => {
+    userDao.findUserById(req.user._id, (err, user) => {
       //check wether user is editor in database
       if (err) {
         return res.status(500).send(err);
@@ -17,7 +17,7 @@ module.exports = app => {
       if (!user) {
         return res.status(500).send("user not exist");
       }
-      if (user.type !== 2) {
+      if (user.type !== "EDITOR") {
         return res.status(500).send("user is not editor");
       }
       // console.log('mi3')

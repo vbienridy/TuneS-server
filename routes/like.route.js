@@ -3,13 +3,13 @@ const likeDao = require("../daos/like.dao");
 module.exports = app => {
   // find subject isliked by current user
   app.get("/api/current/:type/:id/isliked", function(req, res) {
-    likeDao.findSubjectIsLiked(req.user.profile.id, req.params.id, res);
+    likeDao.findSubjectIsLiked(req.user._id, req.params.id, res);
   });
   
   // like subject
   app.post("/api/subject/:type/:id/like", function(req, res) {
     likeDao.likeSubject(
-      req.user.profile.id,
+      req.user._id,
       req.body,
       res
     );
@@ -17,7 +17,7 @@ module.exports = app => {
 
   // like comment
   app.post("/api/like/comment/:id", function(req, res) {
-    likeDao.likeComment(req.user.profile.id, req.params.id, res);
+    likeDao.likeComment(req.user._id, req.params.id, res);
   });
 
   // find comment likes by subject id
@@ -32,7 +32,7 @@ module.exports = app => {
 
   // find comment likes by current user
   app.get("/api/current/likes/comment", function(req, res) {
-    likeDao.findCommentLikesByUserId(req.user.profile.id, res);
+    likeDao.findCommentLikesByUserId(req.user._id, res);
   });
 
   // find comment likes by user id
@@ -43,7 +43,7 @@ module.exports = app => {
   // // delete subject like
   // app.delete("/api/user/:id/likes/subject", function(req, res) {
   //   likeDao.deleteSubjectLike(
-  //     req.user.profile.id,
+  //     req.user._id,
   //     req.params.id,
   //     res
   //   );
@@ -52,7 +52,7 @@ module.exports = app => {
   // // delete comment like
   // app.delete("/api/user/:id/likes/comment", function(req, res) {
   //   likeDao.deleteCommentLike(
-  //     req.user.profile.id,
+  //     req.user._id,
   //     req.params.id,
   //     res
   //   );

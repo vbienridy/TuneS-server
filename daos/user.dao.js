@@ -12,10 +12,20 @@ findUserById = (userId, callback) => {
   });
 };
 
-saveUser = (user, callback) => { //only used when spotify oauth, to prevent user type changed
-  return userModel.collection.update({_id: user._id}, { $setOnInsert: user },
-    { upsert: true }, (err, res)=>{ if(err){ console.log(err);return}; callback() })
-
+saveUser = (user, callback) => {
+  // only used when spotify oauth, to prevent user type changed
+  return userModel.collection.update(
+    { _id: user._id, authType: "SPOTIFY" },
+    { $setOnInsert: user },
+    { upsert: true },
+    (err, res) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      callback();
+    }
+  );
 
   //this is not transcational for dababase, deprecated
   // userModel.findOne({ _id: user._id }).exec(function(err, res) {
@@ -45,61 +55,94 @@ saveUser = (user, callback) => { //only used when spotify oauth, to prevent user
   // });
 };
 
-updateUser = (req, res) => {
-  if (typeof req.user ==='undefined'){
-    return res.status(500).send({message: 'no user in session'});
-  }
-  if (req.user.profile.id!==req.body._id){
-    return res.status(500).send({message: 'request user is not user in session'});
-  }
-  if ( parseInt(req.body.type) ===2 ){ //type must be number
-    req.body.type=2
-  } //error if cannot parse
-  else{
-    req.body.type=1
-  }
-
-  if ( (req.body.type)!==2 ){ //if not update to type editor, do not need verification
-
-  
-  //in production, if in session, must be in database
-  userModel.updateOne({ _id: req.user.profile.id }, { $set: req.body }, function(err) {
-    if (err) {
-      return res.status(500).send(err);
+register = (user, res) => {
+  userModel.findOne({ _id: user._id }).exec(function(err, userDoc) {
+    if(err) {
+      console.log(err);
+      return res.status(500).send({ message: "find user error" });
     }
-    return res.status(200).send({ message: "user updated" });
-  });}
-  else{
-    likeModel.count({user: req.user.profile.id, type:'SUBJECT'}).exec().then(
-      (count)=>
-        {
-          if (count>=6){ //user veified as experienced user
-            userModel.updateOne({ _id: req.user.profile.id }, { $set: req.body }, function(err) {
-              if (err) {
-                return res.status(500).send(err);
-              }
-              return res.status(200).send({ message: "user updated" });
-            })
-          }
-          else{
-            return res.status(500).send('user is not experienced enough to be editor');
-          }
+
+    if (!userDoc) {
+      userModel.create(user, (err, newUserDoc) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).send({ message: "create user error" });
+        } else {
+          console.log("local user registered");
+          console.log(newUserDoc);
+          return res.status(200).send(newUserDoc);
         }
-      ,
-      (err)=>res.status(500).send(err)
-    )
+      });
+    } else {
+      return res
+        .status(500)
+        .send({
+          message:
+            "The username already exists. Please use a different username."
+        });
+    }
+  });
+};
+
+updateUser = (req, res) => {
+  if (typeof req.user === "undefined") {
+    return res.status(500).send({ message: "no user in session" });
+  }
+  if (req.user._id !== req.body._id) {
+    return res
+      .status(500)
+      .send({ message: "request user is not user in session" });
   }
 
-}
+  if (req.body.type !== "EDITOR") {
+    // if not update to type editor, do not need verification
+
+    // in production, if in session, must be in database
+    userModel.updateOne({ _id: req.user._id }, { $set: req.body }, function(
+      err
+    ) {
+      if (err) {
+        return res.status(500).send(err);
+      }
+      return res.status(200).send({ message: "user updated" });
+    });
+  } else {
+    likeModel
+      .count({ user: req.user._id, type: "SUBJECT" })
+      .exec()
+      .then(
+        count => {
+          if (count >= 6) {
+            // user veified as experienced user
+            userModel.updateOne(
+              { _id: req.user._id },
+              { $set: req.body },
+              function(err) {
+                if (err) {
+                  return res.status(500).send(err);
+                }
+                return res.status(200).send({ message: "user updated" });
+              }
+            );
+          } else {
+            return res
+              .status(500)
+              .send("user is not active enough to be editor");
+          }
+        },
+        err => res.status(500).send(err)
+      );
+  }
+};
 
 getUserCount = res => {
   userModel
-    .find({type: 1})
+    .find({ type: "MEMBER" })
     .exec(function(err, users1) {
       if (err) {
         return res.status(500).send(err);
       }
-      userModel.find({ type: 2 }).exec(function(err, users2) {
+      userModel.find({ type: "EDITOR" }).exec(function(err, users2) {
         if (err) {
           return res.status(500).send(err);
         }
@@ -117,7 +160,8 @@ module.exports = {
   findUserById,
   saveUser,
   updateUser,
-  getUserCount
+  getUserCount,
+  register
 };
 
 // const payload = {
