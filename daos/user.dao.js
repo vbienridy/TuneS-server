@@ -12,10 +12,11 @@ findUserById = (userId, callback) => {
   });
 };
 
-saveUser = (user, callback) => {
+saveUser = (user, callback) => { //login or create account with spotify
   // only used when spotify oauth, to prevent user type changed
-  return userModel.collection.update(
-    { _id: user._id, authType: "SPOTIFY" },
+  user.authType="SPOTIFY"
+  return userModel.collection.findOneAndUpdate(
+    { _id: user._id}, //id is unique for local and spotify users, so that duplcate bug is prevented
     { $setOnInsert: user },
     { upsert: true },
     (err, res) => {
@@ -23,65 +24,64 @@ saveUser = (user, callback) => {
         console.log(err);
         return;
       }
-      callback();
+      if (!res && res.authType==="LOCAL"){ //such id exists and it belongs to local
+        //do nothing, do not callback to set user session, may cause time out
+        }
+      else{ //login or create account with spotify
+        callback()
+
+      }
+    }
+  );
+};
+
+register = (user, res) => { //local register, changed to transactional
+  user.authType="LOCAL"
+  userModel.collection.findOneAndUpdate(
+    { _id: user._id},
+    { $setOnInsert: user },
+    { upsert: true },
+    (err, data) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      if (!data){ //id exists
+        return res.status(500).send('id exists')
+      }
+      else{
+        return res.json(user)
+      }
     }
   );
 
-  //this is not transcational for dababase, deprecated
-  // userModel.findOne({ _id: user._id }).exec(function(err, res) {
-  //   if (err) {
+
+  // userModel.findOne({ _id: user._id }).exec(function(err, userDoc) {
+  //   if(err) {
   //     console.log(err);
-  //     return;
+  //     return res.status(500).send({ message: "find user error" });
   //   }
 
-  //   // user not found and will be saved to db
-  //   if (!res) {
-  //     userModel.create(user, (err, userDoc) => {
+  //   if (!userDoc) {
+  //     userModel.create(user, (err, newUserDoc) => {
   //       if (err) {
-  //         console.log("aaaaa");
   //         console.log(err);
-  //         return;
+  //         return res.status(500).send({ message: "create user error" });
   //       } else {
-  //         console.log("sssss");
-  //         console.log("user saved");
-  //         console.log(userDoc);
-  //         return callback(userDoc);
+  //         console.log("local user registered");
+  //         console.log(newUserDoc);
+  //         return res.status(200).send(newUserDoc);
   //       }
   //     });
+  //   } else {
+  //     return res
+  //       .status(500)
+  //       .send({
+  //         message:
+  //           "The username already exists. Please use a different username."
+  //       });
   //   }
-
-  //   // user found in db
-  //   return callback(res);
   // });
-};
-
-register = (user, res) => {
-  userModel.findOne({ _id: user._id }).exec(function(err, userDoc) {
-    if(err) {
-      console.log(err);
-      return res.status(500).send({ message: "find user error" });
-    }
-
-    if (!userDoc) {
-      userModel.create(user, (err, newUserDoc) => {
-        if (err) {
-          console.log(err);
-          return res.status(500).send({ message: "create user error" });
-        } else {
-          console.log("local user registered");
-          console.log(newUserDoc);
-          return res.status(200).send(newUserDoc);
-        }
-      });
-    } else {
-      return res
-        .status(500)
-        .send({
-          message:
-            "The username already exists. Please use a different username."
-        });
-    }
-  });
 };
 
 updateUser = (req, res) => {
@@ -94,9 +94,11 @@ updateUser = (req, res) => {
       .send({ message: "request user is not user in session" });
   }
 
-  if (req.body.type !== "EDITOR") {
-    // if not update to type editor, do not need verification
+  delete req.body.authType //prevent authtype from being changed so that one can not go to other's account
 
+  if (req.body.type !== "EDITOR") {// if not update to type editor, do not need verification
+    req.body.type="MEMBER"//to ensure user has at least one user type
+    
     // in production, if in session, must be in database
     userModel.updateOne({ _id: req.user._id }, { $set: req.body }, function(
       err
@@ -107,6 +109,8 @@ updateUser = (req, res) => {
       return res.status(200).send({ message: "user updated" });
     });
   } else {
+    req.body.type="EDITOR"//to ensure user has at least one user type
+
     likeModel
       .count({ user: req.user._id, type: "SUBJECT" })
       .exec()

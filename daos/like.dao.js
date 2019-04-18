@@ -68,7 +68,7 @@ findCommentLikesByUserId = (userId, res) => {
     });
 };
 
-likeSubject = (userId, subject, res) => {//this is not transactional, but promised for performance
+likeSubject = (userId, subject, res) => {//this is not transactional, may cause like count to change unexpectedly, but promised for performance
   subject["likeCount"] = 1;
   console.log(subject);
   userModel.findOne({ _id: userId }).exec(function(err, user) {
