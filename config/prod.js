@@ -5,7 +5,7 @@ module.exports = {
   mongodb: process.env.MONGODB_URL,
   // frontend:["https://tune-s.herokuapp.com", "http://tune-s.herokuapp.com"]
   frontend: [
-    "https://tunes-s.herokuapp.com",
-    "http://tunes-s.herokuapp.com"
+    "https://tune-s.herokuapp.com",
+    "http://tune-s.herokuapp.com"
   ]
 };
