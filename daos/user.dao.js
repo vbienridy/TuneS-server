@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 const userModel = require("../models/user.model");
 const likeModel = require("../models/like.model");
 
-
 findAllUsers = () => userModel.find();
 
 findUserById = (userId, callback) => {
@@ -14,17 +13,20 @@ findUserById = (userId, callback) => {
 
 saveUser = (user, callback) => { //login or create account with spotify
   // only used when spotify oauth, to prevent user type changed
+  if(typeof user._id!=="string"){
+    return res.status(500).send({ message: "uid not string error" });
+  }
   user.authType="SPOTIFY"
   return userModel.collection.findOneAndUpdate(
     { _id: user._id}, //id is unique for local and spotify users, so that duplcate bug is prevented
     { $setOnInsert: user },
-    { upsert: true },
+    { upsert: true},
     (err, res) => {
       if (err) {
         console.log(err);
         return;
       }
-      if (!res && res.authType==="LOCAL"){ //such id exists and it belongs to local
+      if (res.value && res.value.authType==="LOCAL"){ //such id exists and it belongs to local
         //do nothing, do not callback to set user session, may cause time out
         }
       else{ //login or create account with spotify
@@ -36,20 +38,26 @@ saveUser = (user, callback) => { //login or create account with spotify
 };
 
 register = (user, res) => { //local register, changed to transactional
+  if(typeof user._id!=="string" || typeof user.password!=="string"){
+    return res.status(500).send({ message: "uid or pwd not string error" });
+  }
   user.authType="LOCAL"
   userModel.collection.findOneAndUpdate(
     { _id: user._id},
     { $setOnInsert: user },
-    { upsert: true },
+    { upsert: true},
     (err, data) => {
       if (err) {
         console.log(err);
-        return;
+        return res.status(500).send({ message: "db error" });
       }
-      if (!data){ //id exists
-        return res.status(500).send('id exists')
+      if (data.value){ //id exists
+        // console.log(data.value)
+        // console.log('id exist?')
+        return res.status(500).send({ message: "id may exist" })
       }
       else{
+        console.log('id not exist?')
         return res.json(user)
       }
     }

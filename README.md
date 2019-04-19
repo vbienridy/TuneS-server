@@ -4,10 +4,13 @@ dev configured with local mongodb
 prod configured with heroku env mongodb
 mongodb local: mongod --port 12345
 
-1.user not in session- error
-2.user in session but not in database --error
-3. user in session and in database --OK
+verify schema for: update, create
 
+1.user not in session- error
+2.user in session but not in database --error, so may cause "follow" bugs, but not possible in most cases
+3. user in session and in database --if transction, OK
+
+validated that user id and subject id are strings.
 find by string for onjectId is OK, object is will go to frontend string
 but set string as objectId in ref is not OK, need  ObjectId(string) to convert
 #

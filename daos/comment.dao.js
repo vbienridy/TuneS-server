@@ -38,11 +38,17 @@ createComment = (userId, subject, commentContent, res) => {
     if (err) {
       return res.status(500).send(err);
     }
+
+    if(typeof subject._id!=="string"){
+      return res.status(500).send({ message: "subject id  not string error" });
+    }
+    
     if (!user) {
       return res.status(500).send({
         message: "not found user in database"
       });
     } else {
+
       subjectModel
         .findOne({ _id: subject._id })
         .exec(function(err, subjectDoc) {

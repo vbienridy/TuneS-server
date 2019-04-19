@@ -1,8 +1,51 @@
 const keys = require("../config/keys");
 const passport = require("passport");
+const followModel = require("../models/follow.model");
 const userDao = require("../daos/user.dao");
 
+
 module.exports = app => {
+
+  app.post("/user/:fid/follow", function(req, res){// fid to be followed by user in session
+    if(!req.user){
+      res.status(500).send({message: "no user in session"});
+    }
+    
+    //even if user is deleted in db, following does not make bugs
+    followModel.collection.insert({follower: req.user._id, followee:req.params.fid})
+      .then( data=>res.send({message: "success"}) ).catch(err=>res.send(" follow error"))
+  })
+
+  app.delete("/user/:fid/unfollow", function(req, res){// fid to be unfollowed by user in session
+    if(!req.user){
+      res.status(500).send({message: "no user in session"});
+    }
+
+    //even if user is deleted in db, he can still follow
+    followModel.collection.deleteOne({follower: req.user._id, followee:req.params.fid})
+      .then( data=>res.send({message: "success"}) ).catch(err=>res.send("unfollow error"))
+  })
+
+  app.get("/user/:fid/followers", function(req, res){ //get followers by id
+    followModel.find({followee: req.params.fid}).populate('follower', {photo:1, _id:1, displayName:1})
+      .exec().then( data=>res.json(data) ).catch( err=>res.send("get followers error") )
+  })
+
+  app.get("/user/:fid/followees", function(req, res){ //get followees by id
+    followModel.find({follower: req.params.fid}).populate('followee', {photo:1, _id:1, displayName:1})
+      .exec().then( data=>res.json(data) ).catch( err=>res.send("get followees error") )
+  })
+
+  app.get("/user/:fid/checkfollow", function(req, res){
+    if(!req.user){
+      res.status(500).send({message: "no user in session"});
+    }
+
+    followModel.collection.findOne({follower: req.user._id, followee: req.params.fid}).then( data=>res.json( {following: data ? true : false }) ).catch( err=>res.send("check fol error") )
+
+  })   //checkFollowing of fid for user in session
+
+  
   app.get("/session", function(req, res) {
     res.status(200).send(req.user);
   });

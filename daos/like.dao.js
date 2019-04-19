@@ -75,6 +75,11 @@ likeSubject = (userId, subject, res) => {//this is not transactional, may cause 
     if (err) {
       return res.status(500).send(err);
     }
+
+    if(typeof subject._id!=="string"){
+      return res.status(500).send({ message: "subject id  not string error" });
+    }
+    
     if (!user) {
       return res.status(500).send({
         message: "user not found in database"
