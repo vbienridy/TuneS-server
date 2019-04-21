@@ -24,7 +24,7 @@ module.exports = app => {
       if (req.body.type === "album" || req.body.type === "artist") {
         //make sure other fields are not updated by someone
         subjectDao
-          .update(req.params.subjectId, { type: req.body.type, intro: req.body.intro })
+          .update(req.params.subjectId, { type: req.body.type, image: req.body.image, title: req.body.title, intro: req.body.intro })
           .then(data => {
             console.log("suc");
             return res.json({ message: "success" });
@@ -37,7 +37,7 @@ module.exports = app => {
       if (req.body.type === "track") {
         //make sure other fields are not  updated by someone
         subjectDao
-          .update(req.params.subjectId, { type: req.body.type, lyric: req.body.lyric })
+          .update(req.params.subjectId, { type: req.body.type, image: req.body.image, title: req.body.title, lyric: req.body.lyric })
           .then(() => res.json({ message: "success" }))
           .catch(err => {
             console.log(err);
