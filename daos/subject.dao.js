@@ -28,29 +28,30 @@ update = (id, edited) => {
 findTopSubjects = res => {
   subjectModel
     .find({ type: "album" })
-    .sort([["likeCount", -1]])
+    .sort([["likeCount", -1]]).limit(10)
     .exec(function(err, albums) {
       if (err) {
         return res.status(500).send(err);
       }
       subjectModel
         .find({ type: "artist" })
-        .sort([["likeCount", -1]])
+        .sort([["likeCount", -1]]).limit(10)
         .exec(function(err, artists) {
           if (err) {
             return res.status(500).send(err);
           }
           subjectModel
             .find({ type: "track" })
-            .sort([["likeCount", -1]])
+            .sort([["likeCount", -1]]).limit(10)
             .exec(function(err, tracks) {
               if (err) {
                 return res.status(500).send(err);
               }
               const topSubjects = {
-                topTracks: tracks.length > 10 ? tracks.slice(10) : tracks,
-                topAlbums: albums.length > 10 ? albums.slice(10) : albums,
-                topArtists: artists.length > 10 ? artists.slice(10) : artists
+                topTracks:  tracks,
+                topAlbums: albums,
+                topArtists: artists
+                
               };
               res.status(200).send(topSubjects);
             });
